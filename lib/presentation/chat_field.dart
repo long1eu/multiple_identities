@@ -26,7 +26,7 @@ class ChatFieldState extends State<ChatField> {
     super.initState();
     new Observable(_typeController.stream)
         .doOnData((String _) => StoreProvider.of<AppState>(context).dispatch(new SetIsTyping(true)))
-        .debounce(const Duration(seconds: 1))
+        .debounceTime(const Duration(seconds: 1))
         .doOnData((String _) => StoreProvider.of<AppState>(context).dispatch(new SetIsTyping(false)))
         .listen(null);
   }
