@@ -27,27 +27,28 @@ class RegisterUserSocketEpic implements EpicClass {
   Stream<dynamic> call(Stream<dynamic> actions, EpicStore<dynamic> a) {
     return new Observable(actions).cast<RegisterUserSocket>().flatMap((RegisterUserSocket action) {
       final EpicStore<AppState> store = a;
-      final StreamController<dynamic> actions = new StreamController.broadcast();
+      // ignore: close_sinks
+      final StreamController<dynamic> actions = StreamController.broadcast();
 
-      action.user.getSocket()
-        ..on(login, (List<dynamic> args) async => actions.add(new SocketUserLogin(action.user.uid, args)))
-        ..on(SocketEvent.connect, (List<dynamic> args) async => actions.add(new SocketConnected(action.user.uid)))
-        ..on(SocketEvent.disconnect, (List<dynamic> args) async => actions.add(new SocketDisconnected(action.user.uid)))
-        ..on(SocketEvent.connectError, (List<dynamic> args) async => actions.add(new SocketConnectionError(action.user.uid)))
-        ..on(SocketEvent.connectTimeout, (List<dynamic> args) async => actions.add(new SocketConnectionTimeout(action.user.uid)));
+      action.user.socket
+        ..on(login).listen((Event event) async => actions.add(new SocketUserLogin(action.user.uid, event.args)))
+        ..on(Socket.eventConnect).listen((_) async => actions.add(new SocketConnected(action.user.uid)))
+        ..on(Socket.eventDisconnect).listen((_) async => actions.add(new SocketDisconnected(action.user.uid)))
+        ..on(Socket.eventConnectError).listen((_) async => actions.add(new SocketConnectionError(action.user.uid)))
+        ..on(Socket.eventConnectTimeout).listen((_) async => actions.add(new SocketConnectionTimeout(action.user.uid)));
 
       final bool appIsConnected = store.state.users.any((AppUser user) => user.status == ConnectionStatus.connected);
       if (!appIsConnected) {
-        action.user.getSocket()
-          ..on(newMessage, (List<dynamic> args) async => actions.add(new SocketNewMessage(args[0])))
-          ..on(userJoined, (List<dynamic> args) async => actions.add(new SocketUserJoined(args[0])))
-          ..on(userLeft, (List<dynamic> args) async => actions.add(new SocketUserLeft(args[0])))
-          ..on(typing, (List<dynamic> args) async => actions.add(new SocketUserTyping(args[0])))
-          ..on(stopTyping, (List<dynamic> args) async => actions.add(new SocketUserStopTyping(args[0])));
+        action.user.socket
+          ..on(newMessage).listen((event) async => actions.add(new SocketNewMessage(event.args[0])))
+          ..on(userJoined).listen((event) async => actions.add(new SocketUserJoined(event.args[0])))
+          ..on(userLeft).listen((event) async => actions.add(new SocketUserLeft(event.args[0])))
+          ..on(typing).listen((event) async => actions.add(new SocketUserTyping(event.args[0])))
+          ..on(stopTyping).listen((event) async => actions.add(new SocketUserStopTyping(event.args[0])));
       }
 
-      return new Observable.fromFuture(action.user.getSocket().open())
-          .doOnData((dynamic _) => action.user.getSocket().emit(addUser, <String>[action.user.name]))
+      return new Observable.just(action.user.socket.open())
+          .doOnData((dynamic _) => action.user.socket.emit(addUser, <String>[action.user.name]))
           .flatMap((_) => new Observable(actions.stream));
     });
   }

@@ -44,7 +44,7 @@ abstract class AppState implements Built<AppState, AppStateBuilder> {
   bool get isTyping;
 
   @memoized
-  BuiltList<String> get userNames => users.map((user) => user.name);
+  BuiltList<String> get userNames => new BuiltList(users.map((user) => user.name));
 
   static Serializer<AppState> get serializer => _$appStateSerializer;
 }

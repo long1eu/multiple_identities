@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:engine_io_client/engine_io_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_logger/flutter_logger.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:multiple_identities/actions/actions.dart';
 import 'package:multiple_identities/models/app_state.dart';

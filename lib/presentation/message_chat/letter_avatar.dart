@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:engine_io_client/engine_io_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_logger/flutter_logger.dart';
 
 class UserAvatar extends StatelessWidget {
   static final Log log = new Log('UserAvatar');

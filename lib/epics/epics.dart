@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:engine_io_client/engine_io_client.dart';
+import 'package:flutter_logger/flutter_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:multiple_identities/actions/actions.dart';
 import 'package:multiple_identities/actions/socket_io_actions.dart';
@@ -55,7 +55,7 @@ class AppEpics {
                   ..type = MessageType.message;
               }))
           .asyncMap((SocketMessage message) async {
-        await store.state.currentUser.getSocket().emit(RegisterUserSocketEpic.newMessage, <String>[message.message]);
+        await store.state.currentUser.socket.emit(RegisterUserSocketEpic.newMessage, <String>[message.message]);
         return message;
       }).map((SocketMessage message) => new AddMessage(message));
 }

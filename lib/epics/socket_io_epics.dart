@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:engine_io_client/engine_io_client.dart';
+import 'package:flutter_logger/flutter_logger.dart';
 import 'package:multiple_identities/actions/actions.dart';
 import 'package:multiple_identities/actions/socket_io_actions.dart';
 import 'package:multiple_identities/data/app_repository.dart';

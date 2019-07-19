@@ -1,6 +1,5 @@
 library app_user;
 
-import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:engine_io_client/engine_io_client.dart' show SocketOptions, SocketOptionsBuilder, WebSocket;
@@ -27,20 +26,17 @@ abstract class AppUser implements Built<AppUser, AppUserBuilder>, Comparable<App
 
   DateTime get lastAction;
 
-  Socket getSocket() =>
+  Socket get socket =>
       sockets[uid] ??
       () {
-        final Socket socket = Io.socket('https://socket-io-chat.now.sh/', new ManagerOptions((ManagerOptionsBuilder b) {
-          b.options = new SocketOptions((SocketOptionsBuilder b) {
-            b
-              ..path = '/socket.io'
-              ..host = 'socket-io-chat.now.sh'
-              ..transports = new ListBuilder<String>([WebSocket.NAME]);
-          }).toBuilder();
-        }));
+        final ManagerOptions options = ManagerOptions(
+          host: 'socket-io-chat.now.sh',
+          path: '/socket.io',
+          transports: <String>[WebSocket.NAME],
+        );
 
+        final Socket socket = Io.socket('https://socket-io-chat.now.sh/', options);
         sockets[uid] = socket;
-
         return socket;
       }();
 
